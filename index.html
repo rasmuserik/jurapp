@@ -1,0 +1,51 @@
+<head>
+    <title>JuraApp</title>
+    <link rel="author" href="http://rasmuserik.com">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="cleartype" content="on">
+</head>
+<template name="layout">
+{{yield 'menu'}}
+
+<!--nav>
+<a href="{{pathFor 'main'}}">Home</a>
+</nav-->
+
+{{{yield}}}
+
+<footer>
+{{yield 'footer'}}
+</footer>
+</template>
+<template name="main">
+<div class=container>
+    {{#each questions}}
+    <div class=panel>
+        <div class=panel-heading>
+            {{desc}}
+            <span style="float:right">X</span>
+        </div>
+        {{#each questions}}
+        <div class=panel-body>
+            <div class=question>
+                {{text}}
+                <div class=buttons>
+                    <button type=button class="btn btn-primary">Ja</button>
+                    <button type=button class="btn btn-primary">Nej</button>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+    {{/each}}
+</div>
+</template>
+<template name="menu">
+<div class=container>
+    <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
+</div>
+</template>
+<template name="footer">
+Footer
+</template>
+
