@@ -22,63 +22,76 @@
     <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
 </div>
 <div class=container>
-    <a href="/workflow" class="btn btn-lg btn-primary">workflow</a>
-    <a href="/edit" class="btn btn-lg btn-primary">edit</a>
+    <h3>Login som</h3>
+    {{#each users}}
+        <a class="btn btn-lg btn-default userlogin">{{id}}</a>
+    {{/each}}
 </div>
 </template>
 <template name="edit">
 <div class="container">
-<h1>Rediger spørgsmål</h1>
-{{> questionChoice}}
-{{> questions}}
+    <h1>Rediger spørgsmål</h1>
+    {{> questionChoice}}
+    {{> questions}}
 </div>
 </template>
 <template name="workflow">
 <div class="container">
-{{> questions}}
+    {{> questions}}
 </div>
 </template>
 <template name="questionChoice">
-{{#each questionLists}}
-<div>{{this._id}} {{this.desc}}</div>
-{{/each}}
+<div>
+<select class=questionChoice>
+    {{#each questionLists}}
+    <option value="{{this._id}}" {{#if selected}}selected{{/if}}>{{{this.desc}}}</option>
+    {{/each}}
+    <option value="newQuestion">Opret nyt element</option>
+</select>
+</div>
 </template>
 <template name="questions">
-    <div class="panel questions">
-        <div class=panel-heading>
-            <div class=desc {{#if editable}}contenteditable{{/if}}>
-                {{questionList.desc}}
-                {{#unless editable}}
-                <span style="float:right">X</span>
-                {{/unless}}
-            </div>
-        </div>
-        <div class=panel-body>
-            {{#each questions}}
-            <div class=question>
-                <div {{#if ../editable}}contenteditable{{/if}} class=questionText>
-                    {{text}}
-                </div>
-                {{#if../editable}}
-                <div>
-                    <small><em>Begrundelse hvis nej:</em></small>
-                    <div contenteditable class=questionNo>
-                        {{no}}
-                    </div>
-                </div>
-                {{else}}
-                <div class=buttons>
-                    <button type=button class="btn btn-primary">Ja</button>
-                    <button type=button class="btn btn-primary">Nej</button>
-                </div>
-                {{/if}}
-            </div>
-            {{/each}}
-            <hr>
-            <div {{#if editable}}contenteditable{{/if}} class=info>
-                {{questionList.info}}
-            </div>
+<div class="panel questions">
+    <div class=panel-heading>
+        <div class=desc {{#if editable}}contenteditable{{/if}}>
+            {{{questionList.desc}}}
+            {{#unless editable}}
+            <span style="float:right">X</span>
+            {{/unless}}
         </div>
     </div>
+    <div class=panel-body>
+        {{#each questions}}
+        <div class=question>
+            <div {{#if ../editable}}contenteditable{{/if}} class=questionText>
+                {{{text}}}
+            </div>
+            {{#if../editable}}
+            <div>
+                <small><em>Begrundelse hvis nej:</em></small>
+                <div contenteditable class=questionNo>
+                    {{{no}}}
+                </div>
+            </div>
+            {{else}}
+            <div class=buttons>
+                <button type=button class="btn btn-primary">Ja</button>
+                <button type=button class="btn btn-primary">Nej</button>
+            </div>
+            {{/if}}
+        </div>
+        {{/each}}
+        {{#if editable}}
+            <button type=button class="addQuestion btn btn-default">Tilføj Spørgsmål</button>
+        {{/if}}
+        <hr>
+        <div {{#if editable}}contenteditable{{/if}} class=info>
+            {{{questionList.info}}}
+        </div>
+        {{#if editable}}
+            Next: {{questionList.next}}
+        {{/if}}
+    </div>
+</div>
 </template>
 
