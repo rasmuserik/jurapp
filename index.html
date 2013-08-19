@@ -44,8 +44,8 @@
 <template name="dashboard">
 </template>
 <template name="questions">
-    {{#if questionList.prev}}<a class="btn btn-default prev">Forrige</a>{{/if}}
-    {{#if questionList.next}}<a class="btn btn-default next">Næste</a>{{/if}}
+    <a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
+    <a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
 <div class="panel questions">
     <div class=panel-heading>
         <div class=desc {{#if editable}}contenteditable{{/if}}>
