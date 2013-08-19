@@ -17,15 +17,20 @@
     <a class="btn btn-lg btn-default userlogin">{{id}}</a>
     {{/each}}
     {{/unless}}
-    
+
     {{#if user}}
     Logget ind som {{user.id}}
     <a class="btn btn-default userlogout">Log ud</a>
     {{/if}}
 </div>
-
 <div class=container>
-    {{#if user.jura}}{{>edit}}{{/if}}
+    {{#if user.jura}}
+    {{#if questionList}}
+    {{>edit}}
+    {{else}}
+    {{>questionLists}}
+    {{/if}}
+    {{/if}}
     {{#if user.sagsbehandler}}{{>workflow}}{{/if}}
     {{#if user.manager}}{{>dashboard}}{{/if}}
 </div>
@@ -43,9 +48,26 @@
 </template>
 <template name="dashboard">
 </template>
+<template name="questionLists">
+<div>
+    {{#each questionLists}}
+    <div class="openQuestionList">{{{desc}}}</div>
+    {{#if next}}
+    <div class="swap">
+        <small><i class="icon-exchange icon-rotate-90"></i></small>
+    </div>
+    {{/if}}
+    {{/each}}
+</div>
+<div>
+    <a class="btn btn-default newQuestionList">Tilføj ny</a>
+    <a class="btn btn-default datadump">Data dump</a>
+</div>
+</template>
 <template name="questions">
-    <a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
-    <a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
+<a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
+<a class="btn btn-default showQuestionLists">Oversigt</a>
+<a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
 <div class="panel questions">
     <div class=panel-heading>
         <div class=desc {{#if editable}}contenteditable{{/if}}>
@@ -83,9 +105,6 @@
         <div {{#if editable}}contenteditable{{/if}} class=info>
             {{{questionList.info}}}
         </div>
-        {{#if editable}}
-        Next: {{questionList.next}}
-        {{/if}}
     </div>
 </div>
 </template>

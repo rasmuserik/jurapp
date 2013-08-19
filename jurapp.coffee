@@ -55,6 +55,7 @@ getQuestionList = -> QuestionLists.findOne({_id: getCurrentQuestionList()})
 
 ### Main {{{2 ###
 if Meteor.isClient
+  Template.main.questionList = -> Session.get "currentQuestionList"
   Template.main.users = users
   Template.main.user = -> Session.get "user"
   Template.main.events
@@ -63,6 +64,59 @@ if Meteor.isClient
     "click .userlogout": ->
       Session.set "user", undefined
 
+### Question Lists {{{2 ###
+if Meteor.isClient
+  Template.questionLists.questionLists = ->
+    result = []
+    current = QuestionLists.findOne({prev: undefined})
+    while current
+      result.push current
+      current = current.next && QuestionLists.findOne {_id: current.next}
+    result
+  Template.questionLists.events
+
+    "click .newQuestionList": ->
+      last = QuestionLists.findOne {next: undefined}
+      console.log last
+      last.next = QuestionLists.insert
+        desc: "Indsæt beskrivelse her"
+        info: "Indsæt yderligere information her"
+        questions: []
+        prev: last._id
+      QuestionLists.update {_id: last._id}, last
+
+    "click .openQuestionList": -> Session.set "currentQuestionList", this._id
+
+    "click .swap": ->
+      a = this.prev && QuestionLists.findOne {_id: this.prev}
+      b = this
+      c = this.next && QuestionLists.findOne {_id: this.next}
+      return if not c
+      d = c.next && QuestionLists.findOne {_id: c.next}
+      a.next = c._id if a
+      c.prev = a?._id
+      c.next = b._id
+      b.prev = c._id
+      b.next = d?._id
+      d.prev = b._id if d
+      QuestionLists.update {_id: a._id}, a if a
+      QuestionLists.update {_id: b._id}, b
+      QuestionLists.update {_id: c._id}, c
+      QuestionLists.update {_id: d._id}, d if d
+
+
+
+
+    "click .datadump": ->
+      window.open "data:application/json;charset=utf-8," + encodeURIComponent (JSON.stringify {
+        questionlists: QuestionLists.find().fetch()
+        questions: Questions.find().fetch()
+      }, undefined, 2)
+    
+      
+
+
+
 ### Questions {{{2 ###
 if Meteor.isClient
   Template.questions.editable = -> (Session.get "user").jura
@@ -70,9 +124,10 @@ if Meteor.isClient
   Template.questions.questions = ->
     getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
   Template.questions.events
-    "click .next": -> Session.set "currentQuestionList", getQuestionList().next
-    "click .prev": -> Session.set "currentQuestionList", getQuestionList().prev
-    "focusout .desc": (e) ->
+    "mouseup .next": -> Session.set "currentQuestionList", getQuestionList().next
+    "mouseup .showQuestionLists": -> Session.set "currentQuestionList", undefined
+    "mouseup .prev": -> Session.set "currentQuestionList", getQuestionList().prev
+    "blur .desc": (e) ->
       questionList = getQuestionList()
       questionList.desc = e.target.innerHTML.trim()
       QuestionLists.update {_id: questionList._id}, questionList
