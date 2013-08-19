@@ -4,48 +4,81 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="cleartype" content="on">
 </head>
+
 <template name="layout">
-{{yield 'menu'}}
-
-<!--nav>
-<a href="{{pathFor 'main'}}">Home</a>
-</nav-->
-
+{{yield 'header'}}
 {{{yield}}}
-
 <footer>
 {{yield 'footer'}}
 </footer>
 </template>
+<template name="header">
+</template>
+<template name="footer">
+</template>
+
 <template name="main">
 <div class=container>
-    {{#each questions}}
-    <div class=panel>
+    <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
+</div>
+<div class=container>
+    <a href="/workflow" class="btn btn-lg btn-primary">workflow</a>
+    <a href="/edit" class="btn btn-lg btn-primary">edit</a>
+</div>
+</template>
+<template name="edit">
+<div class="container">
+<h1>Rediger spørgsmål</h1>
+{{> questionChoice}}
+{{> questions}}
+</div>
+</template>
+<template name="workflow">
+<div class="container">
+{{> questions}}
+</div>
+</template>
+<template name="questionChoice">
+{{#each questionLists}}
+<div>{{this._id}} {{this.desc}}</div>
+{{/each}}
+</template>
+<template name="questions">
+    <div class="panel questions">
         <div class=panel-heading>
-            {{desc}}
-            <span style="float:right">X</span>
+            <div class=desc {{#if editable}}contenteditable{{/if}}>
+                {{questionList.desc}}
+                {{#unless editable}}
+                <span style="float:right">X</span>
+                {{/unless}}
+            </div>
         </div>
-        {{#each questions}}
         <div class=panel-body>
+            {{#each questions}}
             <div class=question>
-                {{text}}
+                <div {{#if ../editable}}contenteditable{{/if}} class=questionText>
+                    {{text}}
+                </div>
+                {{#if../editable}}
+                <div>
+                    <small><em>Begrundelse hvis nej:</em></small>
+                    <div contenteditable class=questionNo>
+                        {{no}}
+                    </div>
+                </div>
+                {{else}}
                 <div class=buttons>
                     <button type=button class="btn btn-primary">Ja</button>
                     <button type=button class="btn btn-primary">Nej</button>
                 </div>
+                {{/if}}
+            </div>
+            {{/each}}
+            <hr>
+            <div {{#if editable}}contenteditable{{/if}} class=info>
+                {{questionList.info}}
             </div>
         </div>
-        {{/each}}
     </div>
-    {{/each}}
-</div>
-</template>
-<template name="menu">
-<div class=container>
-    <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
-</div>
-</template>
-<template name="footer">
-Footer
 </template>
 
