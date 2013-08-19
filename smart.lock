@@ -9,17 +9,11 @@
       "qp": {
         "path": "../qp"
       },
-      "iron-router": {},
       "bootstrap-3": {}
     },
     "packages": {
       "qp": {
         "path": "../qp"
-      },
-      "iron-router": {
-        "git": "https://github.com/EventedMind/meteor-iron-router.git",
-        "tag": "v0.5.3",
-        "commit": "f737b04106a226c0f8772b9112673a9be49406d7"
       },
       "bootstrap-3": {
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",

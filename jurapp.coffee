@@ -16,6 +16,18 @@ if Meteor.isServer then Meteor.startup -> if 0 == Questions.find().count()
       obj.questions = questions
       QuestionLists.insert obj if obj.desc
 
+  for questionList in QuestionLists.find().fetch()
+    if questionList.next
+      next = QuestionLists.findOne {name: questionList.next}
+      questionList.next = next?._id
+      QuestionLists.update {_id: questionList._id}, questionList
+
+  for questionList in QuestionLists.find().fetch()
+    if questionList.next
+      next = QuestionLists.findOne {_id: questionList.next}
+      next.prev = questionList._id
+      QuestionLists.update {_id: next._id}, next
+
 ### Users {{{1 ###
 
 users =
@@ -33,62 +45,39 @@ users =
 users = for id, obj of users
   obj.id = id
   obj
+### Utility {{{1 ###
 
-### Site structure {{{1 ###
-Router.map ->
-  @route 'main', path: '/'
-  @route 'workflow'
-  @route 'edit'
-  
-Router.configure
-  layout: 'layout'
-  renderTemplates:
-    'header': to: 'header'
-    'footer': to: 'footer'
-    'questions': to: 'questions'
-  data: ->
-    editable: -> Router.current().path is '/edit'
-    questionList: -> QuestionLists.findOne {_id: Session.get "currentQuestion"}
-    users: users
-    questionLists: ->
-      currentQuestion = Session.get "currentQuestion"
-      for questionList in QuestionLists.find().fetch()
-        questionList.selected = true if questionList._id == currentQuestion
-        questionList
+getCurrentQuestionList = ->
+  (Session.get "currentQuestionList") || QuestionLists.findOne({prev: undefined})?._id
+getQuestionList = -> QuestionLists.findOne({_id: getCurrentQuestionList()})
 
 ### Template logic {{{1 ###
 
 ### Main {{{2 ###
 if Meteor.isClient
+  Template.main.users = users
+  Template.main.user = -> Session.get "user"
   Template.main.events
     "click .userlogin": ->
       Session.set "user", this
-  Template.main.user = ->
-    Session.get "user"
-
-### Question Choice {{{2 ###
-if Meteor.isClient
-  Template.questionChoice.events
-    "change .questionChoice": (a) ->
-      questionId = $(a.target).val()
-      if questionId == "newQuestion"
-        questionId = QuestionLists.insert
-          desc: "Tilføj titel"
-          info: "Tilføj beskrivelse"
-          questions: []
-      Session.set "currentQuestion", questionId
+    "click .userlogout": ->
+      Session.set "user", undefined
 
 ### Questions {{{2 ###
 if Meteor.isClient
+  Template.questions.editable = -> (Session.get "user").jura
+  Template.questions.questionList = getQuestionList
   Template.questions.questions = ->
-    QuestionLists.findOne({_id: Session.get "currentQuestion"})?.questions.map (id) -> Questions.findOne {_id: id}
+    getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
   Template.questions.events
+    "click .next": -> Session.set "currentQuestionList", getQuestionList().next
+    "click .prev": -> Session.set "currentQuestionList", getQuestionList().prev
     "focusout .desc": (e) ->
-      questionList = this.questionList()
+      questionList = getQuestionList()
       questionList.desc = e.target.innerHTML.trim()
       QuestionLists.update {_id: questionList._id}, questionList
     "focusout .info": (e) ->
-      questionList = this.questionList()
+      questionList = getQuestionList()
       questionList.info = e.target.innerHTML.trim()
       QuestionLists.update {_id: questionList._id}, questionList
     "focusout .questionText": (e) ->
@@ -98,7 +87,7 @@ if Meteor.isClient
       this.no = e.target.innerHTML.trim()
       Questions.update {_id: this._id}, this
     "click .addQuestion": (e) ->
-      questionList = this.questionList()
+      questionList = getQuestionList()
       questionList.questions.push Questions.insert
         text: "...spørgsmål?"
         no: "...begrundelse hvis nej..."

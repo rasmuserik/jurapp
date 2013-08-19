@@ -4,38 +4,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="cleartype" content="on">
 </head>
-
-<template name="layout">
-{{yield 'header'}}
-{{{yield}}}
-<footer>
-{{yield 'footer'}}
-</footer>
-</template>
-<template name="header">
-</template>
-<template name="footer">
-</template>
-
+<body>
+    {{>main}}
+</body>
 <template name="main">
 <div class=container>
+    {{#unless user}}
     <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
-</div>
-<div class=container>
+
     <h3>Login som</h3>
     {{#each users}}
-        <a class="btn btn-lg btn-default userlogin">{{id}}</a>
+    <a class="btn btn-lg btn-default userlogin">{{id}}</a>
     {{/each}}
+    {{/unless}}
+    
+    {{#if user}}
+    Logget ind som {{user.id}}
+    <a class="btn btn-default userlogout">Log ud</a>
+    {{/if}}
 </div>
+
 <div class=container>
     {{#if user.jura}}{{>edit}}{{/if}}
     {{#if user.sagsbehandler}}{{>workflow}}{{/if}}
+    {{#if user.manager}}{{>dashboard}}{{/if}}
 </div>
 </template>
 <template name="edit">
 <div class="container">
     <h1>Rediger spørgsmål</h1>
-    {{> questionChoice}}
     {{> questions}}
 </div>
 </template>
@@ -44,17 +41,11 @@
     {{> questions}}
 </div>
 </template>
-<template name="questionChoice">
-<div>
-<select class=questionChoice>
-    {{#each questionLists}}
-    <option value="{{this._id}}" {{#if selected}}selected{{/if}}>{{{this.desc}}}</option>
-    {{/each}}
-    <option value="newQuestion">Opret nyt element</option>
-</select>
-</div>
+<template name="dashboard">
 </template>
 <template name="questions">
+    {{#if questionList.prev}}<a class="btn btn-default prev">Forrige</a>{{/if}}
+    {{#if questionList.next}}<a class="btn btn-default next">Næste</a>{{/if}}
 <div class="panel questions">
     <div class=panel-heading>
         <div class=desc {{#if editable}}contenteditable{{/if}}>
@@ -67,10 +58,10 @@
     <div class=panel-body>
         {{#each questions}}
         <div class=question>
-            <div {{#if ../editable}}contenteditable{{/if}} class=questionText>
+            <div {{#if editable}}contenteditable{{/if}} class=questionText>
                 {{{text}}}
             </div>
-            {{#if../editable}}
+            {{#if editable}}
             <div>
                 <small><em>Begrundelse hvis nej:</em></small>
                 <div contenteditable class=questionNo>
@@ -86,14 +77,14 @@
         </div>
         {{/each}}
         {{#if editable}}
-            <button type=button class="addQuestion btn btn-default">Tilføj Spørgsmål</button>
+        <button type=button class="addQuestion btn btn-default">Tilføj Spørgsmål</button>
         {{/if}}
         <hr>
         <div {{#if editable}}contenteditable{{/if}} class=info>
             {{{questionList.info}}}
         </div>
         {{#if editable}}
-            Next: {{questionList.next}}
+        Next: {{questionList.next}}
         {{/if}}
     </div>
 </div>

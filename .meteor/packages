@@ -11,5 +11,4 @@ preserve-inputs
 coffeescript
 stylus
 qp
-iron-router
 bootstrap-3
