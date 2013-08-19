@@ -27,6 +27,10 @@
         <a class="btn btn-lg btn-default userlogin">{{id}}</a>
     {{/each}}
 </div>
+<div class=container>
+    {{#if user.jura}}{{>edit}}{{/if}}
+    {{#if user.sagsbehandler}}{{>workflow}}{{/if}}
+</div>
 </template>
 <template name="edit">
 <div class="container">

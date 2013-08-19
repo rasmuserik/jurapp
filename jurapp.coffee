@@ -20,15 +20,15 @@ if Meteor.isServer then Meteor.startup -> if 0 == Questions.find().count()
 
 users =
   "Sagsbehandler 1":
-    kind: "sagsbehandler"
+    sagsbehandler: true
   "Sagsbehandler 2":
-    kind: "sagsbehandler"
+    sagsbehandler: true
   "Sagsbehandler 3":
-    kind: "sagsbehandler"
+    sagsbehandler: true
   "Områdeleder":
-    kind: "manager"
+    manager: true
   "Jura-admininstrator":
-    kind: "jura"
+    jura: true
 
 users = for id, obj of users
   obj.id = id
@@ -63,6 +63,8 @@ if Meteor.isClient
   Template.main.events
     "click .userlogin": ->
       Session.set "user", this
+  Template.main.user = ->
+    Session.get "user"
 
 ### Question Choice {{{2 ###
 if Meteor.isClient
