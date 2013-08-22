@@ -9,20 +9,38 @@
 </body>
 <template name="main">
 <div class=container>
-    {{#unless user}}
-    <h1>Jurapp <small>workflow og checklister for juridisk korrekt sagsbehandling</small></h1>
+{{#if user}}
 
-    <h3>Login som</h3>
-    {{#each users}}
-    <a class="btn btn-lg btn-default userlogin">{{id}}</a>
-    {{/each}}
-    {{/unless}}
+        <div class="pull-right">
+          {{user.id}} <a class="btn btn-default userlogout">Log ud</a>
+        </div>
+    
+{{/if}}
+{{#unless user}}
+    <br>
+    <div class="jumbotron">
+        <h1>JurApp</h1> 
+        <div>- workflow og checklister for juridisk korrekt sagsbehandling</div>
+    </div>
 
-    {{#if user}}
-    Logget ind som {{user.id}}
-    <a class="btn btn-default userlogout">Log ud</a>
-    {{/if}}
+    <div class=row>
+        <div class=col-sm-6>
+            <h3>Beskrivelse</h2>
+            <p>Noget tekst der beskriver produktet. Og noget mere tekst, et cetera. Beskrivelse af formålet med JurApp, og baggrund, og dette er iøvrigt blot fyldtekst der bliver erstattet...</p>
+
+        </div>
+        <div class=col-sm-6>
+            <h3>Eksempel-login som</h3>
+            {{#each users}}
+            <div>
+                <a class="btn btn-lg btn-block btn-default userlogin">{{id}}</a>
+            </div>
+            {{/each}}
+        </div>
+    </div>
 </div>
+{{/unless}}
+
 <div class=container>
     {{#if user.jura}}
     {{#if questionList}}
@@ -32,7 +50,9 @@
     {{/if}}
     {{/if}}
     {{#if user.sagsbehandler}}{{>workflow}}{{/if}}
-    {{#if user.manager}}{{>dashboard}}{{/if}}
+    {{#if user.manager}}{{>dashboard}}
+    not implemented yet
+    {{/if}}
 </div>
 </template>
 <template name="edit">
@@ -49,9 +69,13 @@
 <template name="dashboard">
 </template>
 <template name="questionLists">
+<h1>
+Rediger spørgsmålsliste
+</h1>
+<hr>
 <div>
     {{#each questionLists}}
-    <div class="openQuestionList">{{{desc}}}</div>
+    <div class="openQuestionList btn btn-default btn-xs">{{{desc}}}</div>
     {{#if next}}
     <div class="swap">
         <small><i class="icon-exchange icon-rotate-90"></i></small>
@@ -59,6 +83,7 @@
     {{/if}}
     {{/each}}
 </div>
+<hr>
 <div>
     <a class="btn btn-default newQuestionList">Tilføj ny</a>
     <a class="btn btn-default datadump">Data dump</a>
@@ -66,14 +91,15 @@
 </template>
 <template name="questions">
 <a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
-<a class="btn btn-default showQuestionLists">Oversigt</a>
+{{#if editable}}<a class="btn btn-default showQuestionLists">Oversigt</a>{{/if}}
 <a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
+<hr>
 <div class="panel questions">
     <div class=panel-heading>
         <div class=desc {{#if editable}}contenteditable{{/if}}>
             {{{questionList.desc}}}
             {{#unless editable}}
-            <span style="float:right">X</span>
+            <span style="float:right"></span>
             {{/unless}}
         </div>
     </div>
@@ -89,6 +115,7 @@
                 <div contenteditable class=questionNo>
                     {{{no}}}
                 </div>
+                <hr>
             </div>
             {{else}}
             <div class=buttons>

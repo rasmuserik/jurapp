@@ -7,7 +7,8 @@
     "qp": {
       "path": "/home/rasmuserik/qp"
     },
-    "bootstrap-3": {},
-    "font-awesome": {}
+    "font-awesome": {},
+    "bootstrap3-less": {},
+    "bootstrap-3": {}
   }
 }

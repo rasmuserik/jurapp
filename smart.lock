@@ -9,22 +9,28 @@
       "qp": {
         "path": "../qp"
       },
-      "bootstrap-3": {},
-      "font-awesome": {}
+      "font-awesome": {},
+      "bootstrap3-less": {},
+      "bootstrap-3": {}
     },
     "packages": {
       "qp": {
         "path": "../qp"
       },
+      "font-awesome": {
+        "git": "https://github.com/nate-strauser/meteor-font-awesome.git",
+        "tag": "v3.2.1",
+        "commit": "38bdfff72dfb8857b272f9a9b056045d6a015489"
+      },
+      "bootstrap3-less": {
+        "git": "https://github.com/eprochasson/bootstrap3-less",
+        "tag": "v0.1.0",
+        "commit": "f9d14d5d9325437997db0b407399a1cab710d83e"
+      },
       "bootstrap-3": {
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
         "tag": "v0.3.2",
         "commit": "a09f87b01f625ca86d97f93206e7ff475cf3db3b"
-      },
-      "font-awesome": {
-        "git": "https://github.com/nate-strauser/meteor-font-awesome.git",
-        "tag": "v3.2.0",
-        "commit": "2cba6f907a2579cae2d399b522f9544c13d5e091"
       }
     }
   }
