@@ -81,9 +81,37 @@
 </div>
 </template>
 <template name="workflow">
-<div>Workflow <span id=workflowId contenteditable>{{workflowName}}</span></div>
+<h1>Workflow <span class="editable workflowId" contenteditable>{{workflowName}}</span></h1>
+
 <div class="container">
-    {{> questions}}
+<a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
+<a class="btn btn-default showWorkflows">Workflows</a>
+<a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
+<hr/>
+<div class="panel questions">
+    <div class=panel-heading>
+        <div class=desc>
+            {{{questionList.desc}}}
+        </div>
+    </div>
+    <div class=panel-body>
+        {{#each questions}}
+        <div class=question>
+            <div class=questionText>
+                {{{text}}}
+            </div>
+            <div class=buttons>
+                <button type=button class="btn btn-primary">Ja</button>
+                <button type=button class="btn btn-primary">Nej</button>
+            </div>
+        </div>
+        {{/each}}
+        <hr>
+        <div class=info>
+            {{{questionList.info}}}
+        </div>
+    </div>
+</div>
 </div>
 </template>
 <template name="dashboard">
@@ -95,7 +123,10 @@
 <hr/>
 <div>
     {{#each questionLists}}
-    <div class="openQuestionList btn btn-default btn-xs">{{{desc}}}</div>
+    <div>
+    <span class="openQuestionList btn btn-default btn-xs">{{{desc}}}</span>
+    (sagsbehandlingstrin “<span class="questionStep editable" contenteditable>{{{step}}}</span>”)
+    </div>
     {{#if next}}
     <div class="swap">
         <small><i class="icon-exchange icon-rotate-90"></i></small>
@@ -113,10 +144,10 @@
 <a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
 {{#if editable}}<a class="btn btn-default showQuestionLists">Oversigt</a>{{/if}}
 <a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
-<hr>
+<hr/>
 <div class="panel questions">
     <div class=panel-heading>
-        <div class=desc {{#if editable}}contenteditable{{/if}}>
+        <div class="desc editable" contenteditable>
             {{{questionList.desc}}}
             {{#unless editable}}
             <span style="float:right"></span>
@@ -126,13 +157,13 @@
     <div class=panel-body>
         {{#each questions}}
         <div class=question>
-            <div {{#if editable}}contenteditable{{/if}} class=questionText>
+            <div contenteditable class="questionText editable">
                 {{{text}}}
             </div>
             {{#if editable}}
             <div>
                 <small><em>Begrundelse hvis nej:</em></small>
-                <div contenteditable class=questionNo>
+                <div contenteditable class="questionNo editable">
                     {{{no}}}
                 </div>
                 <hr>
@@ -149,7 +180,7 @@
         <button type=button class="addQuestion btn btn-default">Tilføj Spørgsmål</button>
         {{/if}}
         <hr>
-        <div {{#if editable}}contenteditable{{/if}} class=info>
+        <div contenteditable class="info editable">
             {{{questionList.info}}}
         </div>
     </div>

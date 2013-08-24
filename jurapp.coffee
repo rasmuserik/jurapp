@@ -77,6 +77,28 @@ if Meteor.isClient
       console.log "insert", obj
       Workflows.insert obj
 
+### Workflow {{{2 ###
+if Meteor.isClient
+  Template.workflow.questionList = ->
+    console.log getQuestionList()
+    getQuestionList()
+  Template.workflow.questions = ->
+    getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
+  Template.workflow.events
+    "mouseup .next": ->
+      workflow = Session.get "workflow"
+      workflow.questionlist = getQuestionList().next
+      Workflows.update {_id: workflow._id}, workflow
+      Session.set "workflow", workflow
+      Session.set "currentQuestionList", workflow.questionlist
+    "mouseup .showWorkflows": -> Session.set "workflow", undefined
+    "mouseup .prev": ->
+      workflow = Session.get "workflow"
+      workflow.questionlist = getQuestionList().prev
+      Workflows.update {_id: workflow._id}, workflow
+      Session.set "workflow", workflow
+      Session.set "currentQuestionList", workflow.questionlist
+
 ### Main {{{2 ###
 if Meteor.isClient
   Template.main.questionList = -> Session.get "currentQuestionList"
@@ -102,7 +124,13 @@ if Meteor.isClient
     result
   Template.questionLists.events
 
-    "click .newQuestionList": ->
+    "blur .questionStep": (e) ->
+      questionList = this
+      console.log this
+      questionList.step = e.target.innerHTML.trim()
+      QuestionLists.update {_id: questionList._id}, questionList
+
+    "mouseup .newQuestionList": ->
       last = QuestionLists.findOne {next: undefined}
       console.log last
       last.next = QuestionLists.insert
@@ -112,9 +140,9 @@ if Meteor.isClient
         prev: last._id
       QuestionLists.update {_id: last._id}, last
 
-    "click .openQuestionList": -> Session.set "currentQuestionList", this._id
+    "mouseup .openQuestionList": -> Session.set "currentQuestionList", this._id
 
-    "click .swap": ->
+    "mouseup .swap": ->
       a = this.prev && QuestionLists.findOne {_id: this.prev}
       b = this
       c = this.next && QuestionLists.findOne {_id: this.next}
@@ -131,10 +159,7 @@ if Meteor.isClient
       QuestionLists.update {_id: c._id}, c
       QuestionLists.update {_id: d._id}, d if d
 
-
-
-
-    "click .datadump": ->
+    "mouseup .datadump": ->
       window.open "data:application/json;charset=utf-8," + encodeURIComponent (JSON.stringify {
         questionlists: QuestionLists.find().fetch()
         questions: Questions.find().fetch()
@@ -154,7 +179,7 @@ if Meteor.isClient
     "mouseup .next": -> Session.set "currentQuestionList", getQuestionList().next
     "mouseup .showQuestionLists": -> Session.set "currentQuestionList", undefined
     "mouseup .prev": -> Session.set "currentQuestionList", getQuestionList().prev
-    "blur .desc": (e) ->
+    "focusout .desc": (e) ->
       questionList = getQuestionList()
       questionList.desc = e.target.innerHTML.trim()
       QuestionLists.update {_id: questionList._id}, questionList
