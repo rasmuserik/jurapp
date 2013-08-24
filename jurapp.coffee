@@ -2,6 +2,7 @@
 
 Questions = new Meteor.Collection "questions"
 QuestionLists = new Meteor.Collection "questionlists"
+Workflows = new Meteor.Collection "workflows"
 
 ### Load up data {{{2 ###
 
@@ -20,12 +21,14 @@ if Meteor.isServer then Meteor.startup -> if 0 == Questions.find().count()
     if questionList.next
       next = QuestionLists.findOne {name: questionList.next}
       questionList.next = next?._id
+      qp.log "update", next
       QuestionLists.update {_id: questionList._id}, questionList
 
   for questionList in QuestionLists.find().fetch()
     if questionList.next
       next = QuestionLists.findOne {_id: questionList.next}
       next.prev = questionList._id
+      qp.log "update", next
       QuestionLists.update {_id: next._id}, next
 
 ### Users {{{1 ###
@@ -42,9 +45,10 @@ users =
   "Jura-admininstrator":
     jura: true
 
-users = for id, obj of users
-  obj.id = id
+users = for name, obj of users
+  obj.name = obj._id = name
   obj
+
 ### Utility {{{1 ###
 
 getCurrentQuestionList = ->
@@ -53,15 +57,38 @@ getQuestionList = -> QuestionLists.findOne({_id: getCurrentQuestionList()})
 
 ### Template logic {{{1 ###
 
+### Workflows {{{2 ###
+if Meteor.isClient
+  Template.workflows.workflows = ->
+    Workflows.find({ owner: (Session.get "user")._id}).fetch()
+  Template.workflows.events
+    "tap, click .workflow": ->
+      Session.set "workflow", this
+      Session.set "questionlist", this.questionlist
+
+    "tap, click .newWorkflow": ->
+      name = prompt "Navn for det nye workflow"
+      return if not name
+      obj =
+        name: name
+        owner: (Session.get "user")._id
+        answers: {}
+        open: true
+      console.log "insert", obj
+      Workflows.insert obj
+
 ### Main {{{2 ###
 if Meteor.isClient
   Template.main.questionList = -> Session.get "currentQuestionList"
   Template.main.users = users
   Template.main.user = -> Session.get "user"
+  Template.main.workflow = -> Session.get "workflow"
   Template.main.events
     "click .userlogin": ->
       Session.set "user", this
     "click .userlogout": ->
+      Session.set "currentQuestionList", undefined
+      Session.set "workflow", undefined
       Session.set "user", undefined
 
 ### Question Lists {{{2 ###

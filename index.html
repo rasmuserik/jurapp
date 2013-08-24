@@ -9,14 +9,14 @@
 </body>
 <template name="main">
 <div class=container>
-{{#if user}}
+    {{#if user}}
 
-        <div class="pull-right">
-          {{user.id}} <a class="btn btn-default userlogout">Log ud</a>
-        </div>
-    
-{{/if}}
-{{#unless user}}
+    <div class="pull-right">
+        {{user.name}} <a class="btn btn-default userlogout">Log ud</a>
+    </div>
+
+    {{/if}}
+    {{#unless user}}
     <br>
     <div class="jumbotron">
         <h1>JurApp</h1> 
@@ -33,7 +33,7 @@
             <h3>Eksempel-login som</h3>
             {{#each users}}
             <div>
-                <a class="btn btn-lg btn-block btn-default userlogin">{{id}}</a>
+                <a class="btn btn-lg btn-block btn-default userlogin">{{name}}</a>
             </div>
             {{/each}}
         </div>
@@ -49,7 +49,13 @@
     {{>questionLists}}
     {{/if}}
     {{/if}}
-    {{#if user.sagsbehandler}}{{>workflow}}{{/if}}
+    {{#if user.sagsbehandler}}
+    {{#if workflow}}
+    {{>workflow}}
+    {{else}}
+    {{>workflows}}
+    {{/if}}
+    {{/if}}
     {{#if user.manager}}{{>dashboard}}
     not implemented yet
     {{/if}}
@@ -61,7 +67,21 @@
     {{> questions}}
 </div>
 </template>
+<template name="workflows">
+<h1>Workflows</h1>
+<div>
+    {{#each workflows}}
+    <div>
+        <a class="btn btn-default btn-block workflow">{{name}}</a>
+    </div>
+    {{/each}}
+</div>
+<div class=pull-right>
+    <a class="btn btn-default newWorkflow">Nyt workflow</a>
+</div>
+</template>
 <template name="workflow">
+<div>Workflow <span id=workflowId contenteditable>{{workflowName}}</span></div>
 <div class="container">
     {{> questions}}
 </div>
@@ -70,9 +90,9 @@
 </template>
 <template name="questionLists">
 <h1>
-Rediger spørgsmålsliste
+    Rediger spørgsmålsliste
 </h1>
-<hr>
+<hr/>
 <div>
     {{#each questionLists}}
     <div class="openQuestionList btn btn-default btn-xs">{{{desc}}}</div>
@@ -83,7 +103,7 @@ Rediger spørgsmålsliste
     {{/if}}
     {{/each}}
 </div>
-<hr>
+<hr/>
 <div>
     <a class="btn btn-default newQuestionList">Tilføj ny</a>
     <a class="btn btn-default datadump">Data dump</a>
