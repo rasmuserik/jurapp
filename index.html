@@ -100,9 +100,19 @@
             <div class=questionText>
                 {{{text}}}
             </div>
-            <div class=buttons>
-                <button type=button class="btn btn-primary">Ja</button>
-                <button type=button class="btn btn-primary">Nej</button>
+            <div class="buttons">
+                {{#unless response}}
+                <button type=button class="btn btn-primary answerYes">Ja</button>
+                <button type=button class="btn btn-primary answerNo">Nej</button>
+                {{/unless}}
+                {{#if response.yes}}
+                <button type=button class="btn btn-success answerYes">Ja</button>
+                <button type=button class="btn btn-default answerNo">Nej</button>
+                {{/if}}
+                {{#if response.no}}
+                <button type=button class="btn btn-default answerYes">Ja</button>
+                <button type=button class="btn btn-danger answerNo">Nej</button>
+                {{/if}}
             </div>
         </div>
         {{/each}}

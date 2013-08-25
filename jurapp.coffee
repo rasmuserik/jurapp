@@ -3,6 +3,7 @@
 Questions = new Meteor.Collection "questions"
 QuestionLists = new Meteor.Collection "questionlists"
 Workflows = new Meteor.Collection "workflows"
+Answers = new Meteor.Collection "answers"
 
 ### Load up data {{{2 ###
 
@@ -68,7 +69,7 @@ if Meteor.isClient
 
     "tap, click .newWorkflow": ->
       name = prompt "Navn for det nye workflow"
-      return if not name
+      return if !name
       obj =
         name: name
         owner: (Session.get "user")._id
@@ -78,26 +79,61 @@ if Meteor.isClient
       Workflows.insert obj
 
 ### Workflow {{{2 ###
+updateWorkflow = (fn) ->
+  workflow = Session.get "workflow"
+  fn workflow
+  Workflows.update {_id: workflow._id}, workflow
+  Session.set "workflow", workflow
+
+setAnswer = (question, response) ->
+  obj =
+      workflow: (Session.get "workflow")._id
+      question: question
+  currentAnswer = Answers.findOne(obj) ||
+    Answers.findOne {_id: Answers.insert obj}
+  currentAnswer.response = response
+  currentAnswer.user = Session.get("user")._id
+  currentAnswer.timestamp = Date.now()
+  Answers.update {_id: currentAnswer._id}, currentAnswer
+  console.log currentAnswer
+
 if Meteor.isClient
   Template.workflow.questionList = ->
-    console.log getQuestionList()
+    Session.set "currentQuestionList", (Session.get "workflow").questionList
     getQuestionList()
+  Template.workflow.workflowName = -> (Session.get "workflow").name
   Template.workflow.questions = ->
-    getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
+    questions = getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
+    if questions then for question in questions
+      answer =
+        workflow: (Session.get "workflow")._id
+        question: question._id
+      console.log "ans", answer
+      answer = Answers.findOne answer
+      console.log "ans", answer
+      if answer?.response
+        question.response = {}
+        question.response[answer?.response] = true
+    #questionsx = getQuestionList()?.questions.map (id) ->
+    #  question = Questions.findOne {_id: id}
+    #  console.log question, id
+    #  question
+    questions
   Template.workflow.events
+    "focusout .workflowId": (e) ->
+      updateWorkflow (workflow) ->
+        workflow.name = e.target.innerHTML.trim()
+    "mouseup .answerYes": ->
+      setAnswer this._id, "yes"
+    "mouseup .answerNo": ->
+      setAnswer this._id, "no"
     "mouseup .next": ->
-      workflow = Session.get "workflow"
-      workflow.questionlist = getQuestionList().next
-      Workflows.update {_id: workflow._id}, workflow
-      Session.set "workflow", workflow
-      Session.set "currentQuestionList", workflow.questionlist
+      updateWorkflow (workflow) ->
+        workflow.questionList = getQuestionList().next
     "mouseup .showWorkflows": -> Session.set "workflow", undefined
     "mouseup .prev": ->
-      workflow = Session.get "workflow"
-      workflow.questionlist = getQuestionList().prev
-      Workflows.update {_id: workflow._id}, workflow
-      Session.set "workflow", workflow
-      Session.set "currentQuestionList", workflow.questionlist
+      updateWorkflow (workflow) ->
+        workflow.questionList = getQuestionList().next
 
 ### Main {{{2 ###
 if Meteor.isClient
