@@ -79,6 +79,7 @@ if Meteor.isClient
       Workflows.insert obj
 
 ### Workflow {{{2 ###
+
 updateWorkflow = (fn) ->
   workflow = Session.get "workflow"
   fn workflow
@@ -95,29 +96,43 @@ setAnswer = (question, response) ->
   currentAnswer.user = Session.get("user")._id
   currentAnswer.timestamp = Date.now()
   Answers.update {_id: currentAnswer._id}, currentAnswer
-  console.log currentAnswer
 
 if Meteor.isClient
+
   Template.workflow.questionList = ->
     Session.set "currentQuestionList", (Session.get "workflow").questionList
     getQuestionList()
+
   Template.workflow.workflowName = -> (Session.get "workflow").name
+
+  Template.workflow.report = ->
+    report =
+      msg: []
+      done: true
+    for id in getQuestionList()?.questions || []
+      question = Questions.findOne {_id: id}
+      answer = Answers.findOne
+        workflow: (Session.get "workflow")._id
+        question: id
+      console.log id, answer
+      msg = question[answer?.response]
+      if msg
+        report.msg.push msg
+        report.mistake = true
+      report.done = false if !answer
+    window.scrollTo(0,0) if report.done
+    report
+
   Template.workflow.questions = ->
     questions = getQuestionList()?.questions.map (id) -> Questions.findOne {_id: id}
     if questions then for question in questions
       answer =
         workflow: (Session.get "workflow")._id
         question: question._id
-      console.log "ans", answer
       answer = Answers.findOne answer
-      console.log "ans", answer
       if answer?.response
         question.response = {}
         question.response[answer?.response] = true
-    #questionsx = getQuestionList()?.questions.map (id) ->
-    #  question = Questions.findOne {_id: id}
-    #  console.log question, id
-    #  question
     questions
   Template.workflow.events
     "focusout .workflowId": (e) ->

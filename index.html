@@ -84,44 +84,71 @@
 <h1>Workflow <span class="editable workflowId" contenteditable>{{workflowName}}</span></h1>
 
 <div class="container">
-<a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
-<a class="btn btn-default showWorkflows">Workflows</a>
-<a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
-<hr/>
-<div class="panel questions">
-    <div class=panel-heading>
-        <div class=desc>
-            {{{questionList.desc}}}
-        </div>
-    </div>
-    <div class=panel-body>
-        {{#each questions}}
-        <div class=question>
-            <div class=questionText>
-                {{{text}}}
+    <a class="btn btn-default{{#if questionList.prev}} prev{{/if}}" {{#unless questionList.prev}}disabled{{/unless}}>Forrige</a>
+    <a class="btn btn-default showWorkflows">Workflows</a>
+    <a class="btn btn-default{{#if questionList.next}} next{{/if}}" {{#unless questionList.next}}disabled{{/unless}}>Næste</a>
+
+    {{#if report.done}}
+    <hr/>
+    <div class=report>
+        {{#if report.mistake}}
+
+        <div class="panel panel-danger">
+            <div class=panel-heading>
+                Konklusion:
             </div>
-            <div class="buttons">
-                {{#unless response}}
-                <button type=button class="btn btn-primary answerYes">Ja</button>
-                <button type=button class="btn btn-primary answerNo">Nej</button>
-                {{/unless}}
-                {{#if response.yes}}
-                <button type=button class="btn btn-success answerYes">Ja</button>
-                <button type=button class="btn btn-default answerNo">Nej</button>
-                {{/if}}
-                {{#if response.no}}
-                <button type=button class="btn btn-default answerYes">Ja</button>
-                <button type=button class="btn btn-danger answerNo">Nej</button>
-                {{/if}}
+            <div class="panel-body">
+                <ul>
+                    {{#each report.msg}}
+                    <li>{{{this}}}</li>
+                    {{/each}}
+                </ul>
             </div>
         </div>
-        {{/each}}
-        <hr>
-        <div class=info>
-            {{{questionList.info}}}
+        {{else}}
+        <div class="panel panel-success">
+            <div class=panel-heading>
+                Alt ok, gå til næste
+            </div>
+        </div>
+        {{/if}}
+    </div>
+    {{/if}}
+    <hr/>
+    <div class="panel questions">
+        <div class=panel-heading>
+            <div class=desc>
+                {{{questionList.desc}}}
+            </div>
+        </div>
+        <div class=panel-body>
+            {{#each questions}}
+            <div class=question>
+                <div class=questionText>
+                    {{{text}}}
+                </div>
+                <div class="buttons">
+                    {{#unless response}}
+                    <button type=button class="btn btn-primary answerYes">Ja</button>
+                    <button type=button class="btn btn-primary answerNo">Nej</button>
+                    {{/unless}}
+                    {{#if response.yes}}
+                    <button type=button class="btn btn-success answerYes">Ja</button>
+                    <button type=button class="btn btn-default answerNo">Nej</button>
+                    {{/if}}
+                    {{#if response.no}}
+                    <button type=button class="btn btn-default answerYes">Ja</button>
+                    <button type=button class="btn btn-danger answerNo">Nej</button>
+                    {{/if}}
+                </div>
+            </div>
+            {{/each}}
+            <hr>
+            <div class=info>
+                {{{questionList.info}}}
+            </div>
         </div>
     </div>
-</div>
 </div>
 </template>
 <template name="dashboard">
@@ -134,8 +161,8 @@
 <div>
     {{#each questionLists}}
     <div>
-    <span class="openQuestionList btn btn-default btn-xs">{{{desc}}}</span>
-    (sagsbehandlingstrin “<span class="questionStep editable" contenteditable>{{{step}}}</span>”)
+        <span class="openQuestionList btn btn-default btn-xs">{{{desc}}}</span>
+        (sagsbehandlingstrin “<span class="questionStep editable" contenteditable>{{{step}}}</span>”)
     </div>
     {{#if next}}
     <div class="swap">
