@@ -13,10 +13,9 @@ Tool for building decision systems systems
 
 
 - Rasmus Erik
-    - steps (sagsbehandlingstrin)
-    - sagsbehandler workflows
-    - leader dashboard
-        - hvor langt er de enkelte sager
+    - √steps (sagsbehandlingstrin)
+    - √sagsbehandler workflows
+    - (√ - dummy data) leader dashboard
 - Andreas
     - indhold til landing page
     - fyld ind i steps
